@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,9 +15,14 @@ export default function Home() {
         }
         const result = await response.json();
         setData(result);
-      } catch (error) {
-        setError(error.message);
-        console.error('Error fetching data:', error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+          console.error('Error fetching data:', error);
+        } else {
+          setError('An unknown error occurred');
+          console.error('Unknown error:', error);
+        }
       } finally {
         setLoading(false);
       }
